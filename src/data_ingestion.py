@@ -6,6 +6,7 @@ from dataclasses import dataclass
 import pandas as pd
 from sklearn.model_selection import train_test_split
 import mysql.connector as connection
+from data_transformation import DataTransformation,DataTransformationConfig
 
 @dataclass
 class DataIngestionConfig:
@@ -29,7 +30,7 @@ class DataIngestion:
             mydb.close()
             df = result_dataFrame
             logging.info("Read as Dataframes")
-            logging.info(df.head())
+            logging.info(df.columns)
             train_data,test_data = train_test_split(df,test_size=0.2,random_state=42)
             logging.info("Train Test split initiated")
             os.makedirs(os.path.dirname(self.ingestion_config.raw_data_path),exist_ok=True)
@@ -48,3 +49,6 @@ class DataIngestion:
 if __name__=="__main__":
     data_ingestion_obj=DataIngestion()
     train_path,test_path=data_ingestion_obj.initiate_data_ingestion()
+    data_transformation_obj=DataTransformation()
+    X_train_array,y_train_array,X_test_array,y_test_array=data_transformation_obj.initiate_data_transformation(train_data_path=train_path,test_data_path=test_path)
+    
