@@ -1,3 +1,4 @@
+# Import necessary libraries
 from logger import logging
 from exception import CustomException
 import os
@@ -12,26 +13,33 @@ from sklearn.base import TransformerMixin
 from utils import save_object
 import numpy as np
 
+# Define a dataclass to store the preprocessor path
 @dataclass
 class DataTransformationConfig:
     preprocessor_path = os.path.join("artifacts", "Preprocessor.pkl")
+    # Define the preprocessor path
     logging.info("Define the preprocessor path")
 
+# Define the custom label binarizer class
 class MyLabelBinarizer(TransformerMixin):
     def __init__(self, *args, **kwargs):
         self.encoder = OrdinalEncoder(*args, **kwargs)
+        # Initialize the encoder
 
     def fit(self, X, y=None):
         self.encoder.fit(X)
         self.classes_ = self.encoder.categories_[0]
+        # Fit the encoder to the data
         return self
 
     def transform(self, X, y=None):
         return self.encoder.transform(X)
+        # Transform the data using the encoder
 
 class DataTransformation:
     def __init__(self):
         self.preprocessor_path = DataTransformationConfig()
+        # Initialize the preprocessor path
 
     def get_preprocessor(self):
         try:
@@ -80,17 +88,18 @@ class DataTransformation:
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=8)
 
             preprocessor.fit(X_train)  # Fit only on training data
-            logging.info("Fetch the prerocessor Successfully.")
+            logging.info("Fetch the preprocessor Successfully.")
             save_object(preprocessor,self.preprocessor_path.preprocessor_path)
             logging.info("Save the object Successfully")
 
+            # Transform the data using the preprocessor and convert to a numpy array
             X_train_array = preprocessor.transform(X_train)
             y_train_array = np.array(y_train)
             X_test_array = preprocessor.transform(X_test)
             y_test_array = np.array(y_test)
+            logging.info(f"X_train Shape: {X_train_array.shape}")
+            logging.info(f"X_test Shape: {X_test_array.shape}")
 
-            logging.info(f"Train Shape: {X_train_array.shape}")
-            logging.info(f"Test Shape: {X_test_array.shape}")
             return (X_train_array,y_train_array,X_test_array,y_test_array)
         except Exception as e:
             raise CustomException(e)
