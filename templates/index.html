@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zomato Rating Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            background-color: #333;
+        }
+        
+        #container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 2rem;
+            overflow: hidden;
+        }
+        
+        h1, h3 {
+            margin: 0 0 1rem 0;
+        }
+        
+        form {
+            margin: 1.5rem 0;
+        }
+        
+        label,
+        select,
+        input[type="number"],
+        input[type="range"],
+        input[type="submit"] {
+            display: block;
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #fff;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1rem;
+            transition: border-color 0.2s ease-in-out;
+        }
+        
+        label:hover,
+        select:hover,
+        input[type="number"]:hover,
+        input[type="range"]:hover,
+        input[type="submit"]:hover,
+        input[type="number"]:focus,
+        select:focus,
+        input[type="range"]:focus {
+            border-color: #d14242;
+        }
+        
+        input[type="submit"] {
+            background-color: #d14242; /* Red */
+            color: #fff;
+            cursor: pointer;
+            border: none;
+        }
+        
+        input[type="submit"]:hover {
+            background-color: #b83232; /* Darker red */
+        }
+        
+        .column {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        
+        .column label {
+            flex-basis: 100%;
+            margin-bottom: 0.5rem;
+            color: #d14242;
+        }
+        
+        .column select,
+        .column input[type="number"],
+        .column select[id="Location"],
+        .column input[type="range"] {
+            flex-basis: 49%;
+            background-color: #444;
+            color: #fff;
+            border-color: #444;
+        }
+        
+        .column select:focus,
+        .column input[type="number"]:focus,
+        .column select[id="Location"]:focus,
+        .column input[type="range"]:focus {
+            outline: none;
+            box-shadow: 0 0 3px 1px #d14242;
+        }
+        
+        #cost::-webkit-slider-runnable-track {
+            background: #d14242;
+            border: none;
+            border-radius: 3px;
+            height: 8px;
+        }
+
+        #cost::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.5);
+            margin-top: -7px;
+            cursor: pointer;
+        }
+
+        #cost::-moz-range-track {
+            background: #d14242;
+            border: none;
+            border-radius: 3px;
+            height: 8px;
+        }
+
+        #cost::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.5);
+            cursor: pointer;
+        }
+        
+        @media screen and (max-width: 768px) {
+            #container {
+                width: 95%;
+            }
+            
+            .column select,
+            .column input[type="number"],
+            .column select[id="Location"],
+            .column input[type="range"] {
+                flex-basis: 100%;
+            }
+        }
+
+        .headerzomato {
+            flex-basis: 100%;
+            margin-bottom: 0.5rem;
+            color: #d14242;
+            text-align: center;
+            text-shadow: 2px 2px 5px black;
+            font: small-caps bold 70px sans-serif
+        }
+
+        
+
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div class="headerzomato">
+            Zomato
+        </div>
+        
+        <h3 style="color: #b83232;text-align: center;">
+            Here Fill the Fields for Predict the Rating of the restaurant.
+        </h3>
+    <form action="predict" method="post">
+        <div class="column">
+            <select id="online_order" name="online_order">
+                <option  value="" disabled selected hidden>Online Order</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
+            <select id="book_table" name="book_table">
+                <option  value="" disabled selected hidden>Reservation</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
+        </div>
+        <div class="column">
+        <input type="number" id="votes" name="votes" placeholder="Votes">
+        
+            <select id="rest_type" name="rest_type">
+            <option  value="" disabled selected hidden>Restaurant Type</option>
+            <option value="Quick Bites">Quick Bites</option>
+            <option value="Casual Dining">Casual Dining</option>
+            <option value="Cafe">Cafe</option>
+            <option value="Other Rest Type">Other Rest Type</option>
+            <option value="Delivery">Delivery</option>
+            <option value="Dessert Parlor">Dessert Parlor</option>
+            <option value="Bakery">Bakery</option>
+            <option value="Casual Dining, Bar">Bar</option>
+            <option value="Takeaway, Delivery">Sweet Shop</option>
+        </select>
+        </div>
+        
+        
+            <label for="cost">Cost: <span id="cost-label">100</span></label>
+            <input type="range" id="cost" name="cost" min="100" max="5000" step="10" value="100" oninput="updateCostLabel(this.value)">
+            
+        
+
+        <!-- <label for="type">Type</label> -->
+        <div class="column">
+        <select id="type" name="type">
+            <option value="" disabled selected hidden>Type</option>
+            <option value="Delivery">Delivery</option>
+            <option value="Dine-out">Dine-out</option>
+            <option value="Desserts">Desserts</option>
+            <option value="Cafes">Cafes</option>
+            <option value="Drinks & nightlife">Drinks & nightlife</option>
+            <option value="Buffet">Buffet</option>
+            <option value="Pubs and bars">Pubs and bars</option>
+        </select>
+            <!-- <label for="location">Location</label> -->
+        
+            <select id="Location" name="Location">
+            <option value="" disabled selected hidden>Location</option>   
+            <option value="Banashankari">Banashankari</option>
+            <option value="Bannerghatta Road">Bannerghatta Road</option>
+            <option value="Basavanagudi">Basavanagudi</option>
+            <option value="Bellandur">Bellandur</option>
+            <option value="Brigade Road">Brigade Road</option>
+            <option value="Brookefield">Brookefield</option>
+            <option value="BTM">BTM</option>
+            <option value="Church Street">Church Street</option>
+            <option value="Electronic City">Electronic City</option>
+            <option value="Frazer Town">Frazer Town</option>
+            <option value="HSR">HSR</option>
+            <option value="Indiranagar">Indiranagar</option>
+            <option value="Jayanagar">Jayanagar</option>
+            <option value="JP Nagar">JP Nagar</option>
+            <option value="Kalyan Nagar">Kalyan Nagar</option>
+            <option value="Kammanahalli">Kammanahalli</option>
+            <option value="Koramangala 4th Block">Koramangala 4th Block</option>
+            <option value="Koramangala 5th Block">Koramangala 5th Block</option>
+            <option value="Koramangala 6th Block">Koramangala 6th Block</option>
+            <option value="oramangala 7th Block">oramangala 7th Block</option>
+            <option value="Lavelle Road">Lavelle Road</option>
+            <option value="Malleshwaram">Malleshwaram</option>
+            <option value="Marathahalli">Marathahalli</option>
+            <option value="MG Road">MG Road</option>
+            <option value="New BEL Road">New BEL Road</option>
+            <option value="Old Airport Road">Old Airport Road</option>
+            <option value="Rajajinagar">Rajajinagar</option>
+            <option value="Residency Road">Residency Road</option>
+            <option value="Sarjapur Road">Sarjapur Road</option>
+            <option value="Whitefield">Whitefield</option>
+        </select>
+    </div>
+        <br>
+        <p style="color: grey;text-align: center;">
+            Press Submit for the Prediction
+        </p>
+        <input type="submit" id="predict" name="predict" style="color: black;text-align:center;">
+
+
+    </form>
+    <h1 style="color: #cca300;text-align: center;">
+        Rating is {{ pred }} 
+    </h1>
+    <script>
+        function updateCostLabel(cost) {
+            document.getElementById("cost-label").textContent = cost;
+        }
+    </script>
+</div>
+</body>
+</html>
